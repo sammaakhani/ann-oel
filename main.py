@@ -25,12 +25,12 @@ if uploaded_file:
         inputs = ImageLoader.load_image(lr_image)
         preds = model(inputs)
 
-        # Convert preds to PIL image (works for NumPy array or torch tensor)
-        if "torch" in str(type(preds)):
-            hr_array = preds.squeeze().permute(1, 2, 0).cpu().numpy()
+        # Convert preds to PIL image safely
+        hr_array = np.array(preds)
+        if hr_array.max() <= 1.0:
+            hr_array = (hr_array * 255).astype(np.uint8)
         else:
-            hr_array = preds.squeeze()
-        hr_array = (np.clip(hr_array, 0, 1) * 255).astype(np.uint8)
+            hr_array = hr_array.astype(np.uint8)
         hr_image = Image.fromarray(hr_array)
 
     st.image(hr_image, caption="High-Resolution Output", use_column_width=True)
