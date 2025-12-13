@@ -2,3 +2,4 @@ streamlit
 super-image
 Pillow
 numpy
+opencv-python-headless
