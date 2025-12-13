@@ -22,14 +22,13 @@ if uploaded_file:
     st.image(lr_image, caption="Low-Resolution Image", use_column_width=True)
 
     with st.spinner("Upscaling..."):
-        # Load image for super-image model
         inputs = ImageLoader.load_image(lr_image)
         preds = model(inputs)
 
-        # Convert preds to PIL image
-        if hasattr(preds, "squeeze"):  # tensor
+        # Convert preds to PIL image (works for NumPy array or torch tensor)
+        if "torch" in str(type(preds)):
             hr_array = preds.squeeze().permute(1, 2, 0).cpu().numpy()
-        else:  # numpy array
+        else:
             hr_array = preds.squeeze()
         hr_array = (np.clip(hr_array, 0, 1) * 255).astype(np.uint8)
         hr_image = Image.fromarray(hr_array)
