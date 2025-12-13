@@ -3,3 +3,4 @@ super-image
 Pillow
 numpy
 opencv-python-headless
+torch  # Make sure PyTorch is included
