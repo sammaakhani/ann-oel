@@ -26,16 +26,23 @@ if uploaded_file:
         inputs = ImageLoader.load_image(lr_image)
         preds = model(inputs)
 
-        # Convert preds to NumPy array safely
+        # Convert preds to numpy if it's a tensor
         if isinstance(preds, torch.Tensor):
             preds = preds.detach().cpu().numpy()
 
-        hr_array = np.array(preds)
-        if hr_array.max() <= 1.0:
-            hr_array = (hr_array * 255).astype(np.uint8)
-        else:
-            hr_array = hr_array.astype(np.uint8)
+        # Remove batch dimension if present
+        if preds.ndim == 4:
+            preds = preds[0]  # from (1, C, H, W) to (C, H, W)
 
+        # Convert CHW to HWC
+        if preds.shape[0] == 3:
+            preds = np.transpose(preds, (1, 2, 0))
+
+        # Scale to uint8
+        hr_array = np.clip(preds, 0, 1) * 255 if preds.max() <= 1.0 else preds
+        hr_array = hr_array.astype(np.uint8)
+
+        # Convert to PIL
         hr_image = Image.fromarray(hr_array)
 
     st.image(hr_image, caption="High-Resolution Output", use_column_width=True)
