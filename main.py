@@ -2,6 +2,7 @@ import streamlit as st
 from super_image import EdsrModel, ImageLoader
 from PIL import Image
 import numpy as np
+import torch
 
 st.set_page_config(page_title="Super Resolution App", layout="centered")
 st.title("🎯 Super Resolution App")
@@ -25,12 +26,16 @@ if uploaded_file:
         inputs = ImageLoader.load_image(lr_image)
         preds = model(inputs)
 
-        # Convert preds to PIL image safely
+        # Convert preds to NumPy array safely
+        if isinstance(preds, torch.Tensor):
+            preds = preds.detach().cpu().numpy()
+
         hr_array = np.array(preds)
         if hr_array.max() <= 1.0:
             hr_array = (hr_array * 255).astype(np.uint8)
         else:
             hr_array = hr_array.astype(np.uint8)
+
         hr_image = Image.fromarray(hr_array)
 
     st.image(hr_image, caption="High-Resolution Output", use_column_width=True)
