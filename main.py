@@ -3,17 +3,15 @@ import torch
 import numpy as np
 from PIL import Image
 from torchvision.transforms import ToTensor, ToPILImage
+from torchvision.models import resnet18
 
 st.set_page_config(page_title="Super Resolution App", layout="centered")
-st.title("🎯 Image Super Resolution App (Pretrained Model)")
+st.title("🎯 Image Super Resolution App (ANN OEL)")
 
 @st.cache_resource
 def load_model():
-    model = torch.hub.load(
-        "sanghyun-son/EDSR-PyTorch",
-        "edsr",
-        scale=2,
-        pretrained=True
+    model = torch.nn.Sequential(
+        torch.nn.Upsample(scale_factor=2, mode="bicubic", align_corners=False)
     )
     model.eval()
     return model
