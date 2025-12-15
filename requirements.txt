@@ -1,7 +1,5 @@
 streamlit
 torch
 torchvision
-super-image
-opencv-python-headless
 numpy
 Pillow
